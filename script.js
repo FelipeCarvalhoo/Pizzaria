@@ -19,6 +19,7 @@ pizzaJson.map((item, index)=>{
         let key = e.target.closest('.pizza-item').getAttribute('data-key');
         modalQt = 1;
         modalKey = key;
+        
 
 
         c('.pizzaBig img').src = pizzaJson[key].img 
@@ -76,13 +77,37 @@ pizzaJson.map((item, index)=>{
     c('.pizzaInfo--addButton').addEventListener('click', ()=>{
      console.log('Pizza:'+modalKey)
      let size = parseInt(c('.pizzaInfo--size.selected').getAttribute('data-key'));
-     console.log('Tamanho'+size);
-     console.log('Quantidade: '+modalQt);
+     
+     //As mesmas pizzas escolhidas tem que estar juntas, mesmo depois de ja te-las escolhido...
+     let identifier = pizzaJson[modalKey].id+'@'+size;
 
+     let key = cart.findIndex ((item)=>item.identifier == identifier);
+     if(key > -1) {
+      cart[key].qt += modalQt;
+     }
+     else {
      cart.push({
+        identifier,
         id:pizzaJson[modalKey].id,
         size,
-        modalQt
+        qt:modalQt
      });
+    }
+    updateCart();
      closeModal();
     });
+
+    function updateCart() {
+        if(cart.length > 0) {
+        c('aside').classList.add('show');
+        c('.cart').innerHTML = '';
+        for (let i in cart) {
+            let pizzaItem = pizzaJson.find((item)=>item.id = cart[i].id)
+            let cartItem = c('.models .cart--item').cloneNode(true);
+
+            c('.cart').append(cartItem)
+        }
+        } 
+         else {
+            c('aside').classList.remove('show');
+        } }
